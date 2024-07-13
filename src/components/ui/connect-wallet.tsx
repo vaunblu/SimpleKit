@@ -226,6 +226,7 @@ function WalletOptions() {
 
   const sortedConnectors = React.useMemo(() => {
     let metaMaskConnector: Connector | undefined;
+    let injectedConnector: Connector | undefined;
 
     const formattedConnectors = connectors.reduce(
       (acc: Array<Connector>, curr) => {
@@ -233,6 +234,13 @@ function WalletOptions() {
           case "metaMaskSDK":
             metaMaskConnector = {
               ...curr,
+              icon: "https://utfs.io/f/be0bd88f-ce87-4cbc-b2e5-c578fa866173-sq4a0b.png",
+            };
+            return acc;
+          case "injected":
+            injectedConnector = {
+              ...curr,
+              name: "MetaMask",
               icon: "https://utfs.io/f/be0bd88f-ce87-4cbc-b2e5-c578fa866173-sq4a0b.png",
             };
             return acc;
@@ -264,11 +272,19 @@ function WalletOptions() {
 
     if (
       metaMaskConnector &&
-      !formattedConnectors.find(({ id }) => id === "io.metamask")
+      !formattedConnectors.find(
+        ({ id }) => id === "io.metamask" || id === "injected",
+      )
     ) {
       return [metaMaskConnector, ...formattedConnectors];
     }
 
+    if (injectedConnector) {
+      const nonMetaMaskConnectors = formattedConnectors.filter(
+        ({ id }) => id !== "io.metamask",
+      );
+      return [injectedConnector, ...nonMetaMaskConnectors];
+    }
     return formattedConnectors;
   }, [connectors]);
 
