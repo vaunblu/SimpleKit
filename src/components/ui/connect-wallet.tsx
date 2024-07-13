@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Button } from "@/components/ui/button";
+import * as React from "react";
+
 import {
   ConnectWalletModal,
   ConnectWalletModalBody,
@@ -12,6 +12,7 @@ import {
   ConnectWalletModalTitle,
   ConnectWalletModalTrigger,
 } from "@/components/ui/connect-wallet-modal";
+import { Button } from "@/components/ui/button";
 import {
   type Connector,
   useAccount,
@@ -24,35 +25,30 @@ import {
 import { formatEther } from "viem";
 import { Check, ChevronLeft, Copy, RotateCcw } from "lucide-react";
 
-const ConnectorContext = React.createContext<{
+const MODAL_CLOSE_DURATION = 320;
+
+const ConnectWalletContext = React.createContext<{
   pendingConnector: Connector | null;
   setPendingConnector: React.Dispatch<React.SetStateAction<Connector | null>>;
   isConnectorError: boolean;
   setIsConnectorError: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }>({
   pendingConnector: null,
   setPendingConnector: () => { },
   isConnectorError: false,
   setIsConnectorError: () => false,
+  open: false,
+  setOpen: () => false,
 });
 
 export function ConnectWallet() {
-  const MODAL_CLOSE_DURATION = 150;
-
   const { status, address } = useAccount();
-  const { disconnect } = useDisconnect();
-  const { data: ensName } = useEnsName({ address });
-  const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
-  const { data: userBalance } = useBalance({ address });
-  const [open, setOpen] = React.useState(false);
   const [pendingConnector, setPendingConnector] =
     React.useState<Connector | null>(null);
   const [isConnectorError, setIsConnectorError] = React.useState(false);
-
-  const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
-  const formattedUserBalace = userBalance?.value
-    ? parseFloat(formatEther(userBalance.value)).toFixed(4)
-    : undefined;
+  const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (status === "connected" && pendingConnector) {
@@ -67,6 +63,41 @@ export function ConnectWallet() {
     }
   }, [status, setOpen, pendingConnector, setPendingConnector]);
 
+  return (
+    <ConnectWalletContext.Provider
+      value={{
+        pendingConnector,
+        setPendingConnector,
+        isConnectorError,
+        setIsConnectorError,
+        open,
+        setOpen,
+      }}
+    >
+      <ConnectWalletModal open={open} onOpenChange={setOpen}>
+        {address && !pendingConnector ? (
+          <ConnectWalletAccount />
+        ) : (
+          <ConnectWalletConnectors />
+        )}
+      </ConnectWalletModal>
+    </ConnectWalletContext.Provider>
+  );
+}
+
+function ConnectWalletAccount() {
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { data: ensName } = useEnsName({ address });
+  const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
+  const { data: userBalance } = useBalance({ address });
+  const { setOpen } = React.useContext(ConnectWalletContext);
+
+  const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
+  const formattedUserBalace = userBalance?.value
+    ? parseFloat(formatEther(userBalance.value)).toFixed(4)
+    : undefined;
+
   function handleDisconnect() {
     setOpen(false);
     setTimeout(() => {
@@ -75,151 +106,120 @@ export function ConnectWallet() {
   }
 
   return (
-    <ConnectorContext.Provider
-      value={{
-        pendingConnector,
-        setPendingConnector,
-        isConnectorError,
-        setIsConnectorError,
-      }}
-    >
-      <ConnectWalletModal open={open} onOpenChange={setOpen}>
-        {address && !pendingConnector ? (
-          <ConnectWalletModalTrigger asChild>
-            <Button className="rounded-xl">
-              {ensAvatar && <img src={ensAvatar} alt="ENS Avatar" />}
-              {address && (
-                <div>{ensName ? `${ensName}` : formattedAddress}</div>
-              )}
-            </Button>
-          </ConnectWalletModalTrigger>
-        ) : (
-          <ConnectWalletModalTrigger asChild>
-            <Button className="rounded-xl">Connect Wallet</Button>
-          </ConnectWalletModalTrigger>
-        )}
-        {address && !pendingConnector ? (
-          <ConnectWalletModalContent>
-            <ConnectWalletModalHeader>
-              <ConnectWalletModalTitle>Connected</ConnectWalletModalTitle>
-              <ConnectWalletModalDescription className="sr-only">
-                Account modal for your connected Web3 wallet.
-              </ConnectWalletModalDescription>
-            </ConnectWalletModalHeader>
-            <ConnectWalletModalBody className="h-[280px]">
-              <div className="flex w-full flex-col items-center justify-center gap-8 md:pt-5">
-                <div className="size-24 flex items-center justify-center">
-                  <img
-                    className="rounded-full"
-                    src={`https://avatar.vercel.sh/${address}?size=150`}
-                    alt="User gradient avatar"
-                  />
-                </div>
+    <>
+      <ConnectWalletModalTrigger asChild>
+        <Button className="rounded-xl">
+          {ensAvatar && <img src={ensAvatar} alt="ENS Avatar" />}
+          {address && <div>{ensName ? `${ensName}` : formattedAddress}</div>}
+        </Button>
+      </ConnectWalletModalTrigger>
+      <ConnectWalletModalContent>
+        <ConnectWalletModalHeader>
+          <ConnectWalletModalTitle>Connected</ConnectWalletModalTitle>
+          <ConnectWalletModalDescription className="sr-only">
+            Account modal for your connected Web3 wallet.
+          </ConnectWalletModalDescription>
+        </ConnectWalletModalHeader>
+        <ConnectWalletModalBody className="h-[280px]">
+          <div className="flex w-full flex-col items-center justify-center gap-8 md:pt-5">
+            <div className="size-24 flex items-center justify-center">
+              <img
+                className="rounded-full"
+                src={`https://avatar.vercel.sh/${address}?size=150`}
+                alt="User gradient avatar"
+              />
+            </div>
 
-                <div className="space-y-1 px-3.5 text-center sm:px-0">
-                  <div className="flex items-center gap-1.5">
-                    <h1 className="text-xl font-semibold">
-                      <div>{ensName ? `${ensName}` : formattedAddress}</div>
-                    </h1>
-                    <CopyAddressButton />
-                  </div>
-                  <p className="text-balance text-sm text-muted-foreground">
-                    {`${formattedUserBalace ?? "0.00"} ETH`}
-                  </p>
-                </div>
-
-                <Button
-                  className="w-full rounded-xl"
-                  onClick={handleDisconnect}
-                >
-                  Disconnect
-                </Button>
+            <div className="space-y-1 px-3.5 text-center sm:px-0">
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-xl font-semibold">
+                  <div>{ensName ? `${ensName}` : formattedAddress}</div>
+                </h1>
+                <CopyAddressButton />
               </div>
-            </ConnectWalletModalBody>
-          </ConnectWalletModalContent>
-        ) : (
-          <ConnectWalletModalContent>
-            <ConnectWalletModalHeader>
-              <BackChevron />
-              <ConnectWalletModalTitle>
-                {pendingConnector?.name ?? "Connect Wallet"}
-              </ConnectWalletModalTitle>
-              <ConnectWalletModalDescription className="sr-only">
-                Connect your Web3 wallet or create a new one.
-              </ConnectWalletModalDescription>
-            </ConnectWalletModalHeader>
-            <ConnectWalletModalBody>
-              {pendingConnector ? (
-                <div className="flex w-full flex-col items-center justify-center gap-9 md:pt-5">
-                  {pendingConnector?.icon && (
-                    <div className="size-[116px] relative flex items-center justify-center rounded-2xl border p-3">
-                      <img
-                        src={pendingConnector?.icon}
-                        alt={pendingConnector?.name}
-                        className="size-full overflow-hidden rounded-2xl"
-                      />
-                      <img />
-                      {isConnectorError ? <TryAgainButton /> : null}
-                    </div>
-                  )}
+              <p className="text-balance text-sm text-muted-foreground">
+                {`${formattedUserBalace ?? "0.00"} ETH`}
+              </p>
+            </div>
 
-                  <div className="space-y-3.5 px-3.5 text-center sm:px-0">
-                    <h1 className="text-xl font-semibold">
-                      {isConnectorError
-                        ? "Request Error"
-                        : "Requesting Connection"}
-                    </h1>
-                    <p className="text-balance text-sm text-muted-foreground">
-                      {isConnectorError
-                        ? "There was an error with the request. Click above to try again."
-                        : `Open the ${pendingConnector?.name} browser extension to connect your wallet.`}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <WalletOptions />
-              )}
-            </ConnectWalletModalBody>
-            <ConnectWalletModalFooter>
-              <div className="h-0" />
-            </ConnectWalletModalFooter>
-          </ConnectWalletModalContent>
-        )}
-      </ConnectWalletModal>
-    </ConnectorContext.Provider>
+            <Button className="w-full rounded-xl" onClick={handleDisconnect}>
+              Disconnect
+            </Button>
+          </div>
+        </ConnectWalletModalBody>
+      </ConnectWalletModalContent>
+    </>
   );
 }
 
-function CopyAddressButton() {
-  const { address } = useAccount();
-  const [copied, setCopied] = React.useState(false);
-
-  React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (copied) setCopied(false);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, [copied, setCopied]);
-
-  function handleClick() {
-    setCopied(true);
-    navigator.clipboard.writeText(address!);
-  }
+function ConnectWalletConnectors() {
+  const { pendingConnector } = React.useContext(ConnectWalletContext);
 
   return (
-    <button className="text-muted-foreground" onClick={handleClick}>
-      {copied ? (
-        <Check className="size-4" strokeWidth={4} />
-      ) : (
-        <Copy className="size-4" strokeWidth={4} />
-      )}
-    </button>
+    <>
+      <ConnectWalletModalTrigger asChild>
+        <Button className="rounded-xl">Connect Wallet</Button>
+      </ConnectWalletModalTrigger>
+      <ConnectWalletModalContent>
+        <ConnectWalletModalHeader>
+          <BackChevron />
+          <ConnectWalletModalTitle>
+            {pendingConnector?.name ?? "Connect Wallet"}
+          </ConnectWalletModalTitle>
+          <ConnectWalletModalDescription className="sr-only">
+            Connect your Web3 wallet or create a new one.
+          </ConnectWalletModalDescription>
+        </ConnectWalletModalHeader>
+        <ConnectWalletModalBody>
+          {pendingConnector ? (
+            <ConnectWalletConnecting />
+          ) : (
+            <ConnectWalletOptions />
+          )}
+        </ConnectWalletModalBody>
+        <ConnectWalletModalFooter>
+          <div className="h-0" />
+        </ConnectWalletModalFooter>
+      </ConnectWalletModalContent>
+    </>
   );
 }
 
-function WalletOptions() {
+function ConnectWalletConnecting() {
+  const { isConnectorError, pendingConnector } =
+    React.useContext(ConnectWalletContext);
+
+  return (
+    <div className="flex w-full flex-col items-center justify-center gap-9 md:pt-5">
+      {pendingConnector?.icon && (
+        <div className="size-[116px] relative flex items-center justify-center rounded-2xl border p-3">
+          <img
+            src={pendingConnector?.icon}
+            alt={pendingConnector?.name}
+            className="size-full overflow-hidden rounded-2xl"
+          />
+          <img />
+          {isConnectorError ? <RetryConnectorButton /> : null}
+        </div>
+      )}
+
+      <div className="space-y-3.5 px-3.5 text-center sm:px-0">
+        <h1 className="text-xl font-semibold">
+          {isConnectorError ? "Request Error" : "Requesting Connection"}
+        </h1>
+        <p className="text-balance text-sm text-muted-foreground">
+          {isConnectorError
+            ? "There was an error with the request. Click above to try again."
+            : `Open the ${pendingConnector?.name} browser extension to connect your wallet.`}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ConnectWalletOptions() {
   const { setIsConnectorError, setPendingConnector } =
-    React.useContext(ConnectorContext);
+    React.useContext(ConnectWalletContext);
   const { connect, connectors } = useConnect({
     mutation: {
       onError: () => setIsConnectorError(true),
@@ -277,7 +277,7 @@ function WalletOptions() {
   return (
     <div className="flex flex-col gap-3.5">
       {sortedConnectors.map((connector) => (
-        <WalletOption
+        <ConnectWalletOption
           key={connector.uid}
           connector={connector}
           onClick={() => {
@@ -291,7 +291,10 @@ function WalletOptions() {
   );
 }
 
-function WalletOption(props: { connector: Connector; onClick: () => void }) {
+function ConnectWalletOption(props: {
+  connector: Connector;
+  onClick: () => void;
+}) {
   const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {
@@ -321,9 +324,36 @@ function WalletOption(props: { connector: Connector; onClick: () => void }) {
   );
 }
 
+function CopyAddressButton() {
+  const { address } = useAccount();
+  const [copied, setCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (copied) setCopied(false);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, [copied, setCopied]);
+
+  async function handleCopy() {
+    setCopied(true);
+    await navigator.clipboard.writeText(address!);
+  }
+
+  return (
+    <button className="text-muted-foreground" onClick={handleCopy}>
+      {copied ? (
+        <Check className="size-4" strokeWidth={4} />
+      ) : (
+        <Copy className="size-4" strokeWidth={4} />
+      )}
+    </button>
+  );
+}
+
 function BackChevron() {
   const { pendingConnector, setIsConnectorError, setPendingConnector } =
-    React.useContext(ConnectorContext);
+    React.useContext(ConnectWalletContext);
 
   if (!pendingConnector) {
     return null;
@@ -345,9 +375,9 @@ function BackChevron() {
   );
 }
 
-function TryAgainButton() {
+function RetryConnectorButton() {
   const { pendingConnector, setIsConnectorError } =
-    React.useContext(ConnectorContext);
+    React.useContext(ConnectWalletContext);
   const { connect } = useConnect({
     mutation: {
       onError: () => setIsConnectorError(true),

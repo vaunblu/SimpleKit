@@ -3,14 +3,27 @@
 // 1. Import modules
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { State, WagmiProvider as WagmiProviderBase } from "wagmi";
-import { getConfig } from "./wagmi-config";
+import { WagmiProvider as WagmiProviderBase, http, createConfig } from "wagmi";
+import { mainnet } from "wagmi/chains";
+import { walletConnect, coinbaseWallet } from "wagmi/connectors";
 
-// 2. Initialize your Wagmi config and a new QueryClient
-const config = getConfig();
+// Make sure to replace the projectId with your own WalletConnect Project ID,
+// if you wish to use WalletConnect (recommended)!
+const projectId = "78fa76a3de0f683106888b43443018b8";
+
+// 2. Define your Wagmi config
+const config = createConfig({
+  chains: [mainnet],
+  connectors: [coinbaseWallet(), walletConnect({ projectId })],
+  transports: {
+    [mainnet.id]: http(),
+  },
+});
+
+// 3. Initialize your new QueryClient
 const queryClient = new QueryClient();
 
-// 3. Create your Wagmi provider
+// 4. Create your Wagmi provider
 export function WagmiProvider(props: { children: React.ReactNode }) {
   return (
     <WagmiProviderBase config={config}>
