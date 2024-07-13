@@ -106,7 +106,7 @@ function Account() {
   const { disconnect } = useDisconnect();
   const { data: ensName } = useEnsName({ address });
   const { data: userBalance } = useBalance({ address });
-  const { setOpen } = React.useContext(ConnectWalletContext);
+  const context = React.useContext(ConnectWalletContext);
 
   const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
   const formattedUserBalace = userBalance?.value
@@ -114,7 +114,7 @@ function Account() {
     : undefined;
 
   function handleDisconnect() {
-    setOpen(false);
+    context.setOpen(false);
     setTimeout(() => {
       disconnect();
     }, MODAL_CLOSE_DURATION);
@@ -160,21 +160,21 @@ function Account() {
 }
 
 function Connectors() {
-  const { pendingConnector } = React.useContext(ConnectWalletContext);
+  const context = React.useContext(ConnectWalletContext);
 
   return (
     <>
       <ConnectWalletModalHeader>
         <BackChevron />
         <ConnectWalletModalTitle>
-          {pendingConnector?.name ?? "Connect Wallet"}
+          {context.pendingConnector?.name ?? "Connect Wallet"}
         </ConnectWalletModalTitle>
         <ConnectWalletModalDescription className="sr-only">
           Connect your Web3 wallet or create a new one.
         </ConnectWalletModalDescription>
       </ConnectWalletModalHeader>
       <ConnectWalletModalBody>
-        {pendingConnector ? <WalletConnecting /> : <WalletOptions />}
+        {context.pendingConnector ? <WalletConnecting /> : <WalletOptions />}
       </ConnectWalletModalBody>
       <ConnectWalletModalFooter>
         <div className="h-0" />
@@ -184,31 +184,30 @@ function Connectors() {
 }
 
 function WalletConnecting() {
-  const { isConnectorError, pendingConnector } =
-    React.useContext(ConnectWalletContext);
+  const context = React.useContext(ConnectWalletContext);
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-9 md:pt-5">
-      {pendingConnector?.icon && (
+      {context.pendingConnector?.icon && (
         <div className="size-[116px] relative flex items-center justify-center rounded-2xl border p-3">
           <img
-            src={pendingConnector?.icon}
-            alt={pendingConnector?.name}
+            src={context.pendingConnector?.icon}
+            alt={context.pendingConnector?.name}
             className="size-full overflow-hidden rounded-2xl"
           />
           <img />
-          {isConnectorError ? <RetryConnectorButton /> : null}
+          {context.isConnectorError ? <RetryConnectorButton /> : null}
         </div>
       )}
 
       <div className="space-y-3.5 px-3.5 text-center sm:px-0">
         <h1 className="text-xl font-semibold">
-          {isConnectorError ? "Request Error" : "Requesting Connection"}
+          {context.isConnectorError ? "Request Error" : "Requesting Connection"}
         </h1>
         <p className="text-balance text-sm text-muted-foreground">
-          {isConnectorError
+          {context.isConnectorError
             ? "There was an error with the request. Click above to try again."
-            : `Open the ${pendingConnector?.name} browser extension to connect your wallet.`}
+            : `Open the ${context.pendingConnector?.name} browser extension to connect your wallet.`}
         </p>
       </div>
     </div>
@@ -216,11 +215,138 @@ function WalletConnecting() {
 }
 
 function WalletOptions() {
-  const { setIsConnectorError, setPendingConnector } =
-    React.useContext(ConnectWalletContext);
+  const context = React.useContext(ConnectWalletContext);
+  const { connectors, connect } = useConnectors();
+
+  return (
+    <div className="flex flex-col gap-3.5">
+      {connectors.map((connector) => (
+        <WalletOption
+          key={connector.uid}
+          connector={connector}
+          onClick={() => {
+            context.setIsConnectorError(false);
+            context.setPendingConnector(connector);
+            connect({ connector });
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function WalletOption(props: { connector: Connector; onClick: () => void }) {
+  const [ready, setReady] = React.useState(false);
+
+  React.useEffect(() => {
+    (async () => {
+      const provider = await props.connector.getProvider();
+      setReady(!!provider);
+    })();
+  }, [props.connector]);
+
+  return (
+    <Button
+      disabled={!ready}
+      onClick={props.onClick}
+      size="lg"
+      variant="secondary"
+      className="justify-between rounded-xl px-4 py-7 text-base font-semibold"
+    >
+      <p>{props.connector.name}</p>
+      {props.connector.icon && (
+        <img
+          src={props.connector.icon}
+          alt={props.connector.name}
+          className="size-8 overflow-hidden rounded-[6px]"
+        />
+      )}
+    </Button>
+  );
+}
+
+function CopyAddressButton() {
+  const { address } = useAccount();
+  const [copied, setCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (copied) setCopied(false);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, [copied, setCopied]);
+
+  async function handleCopy() {
+    setCopied(true);
+    await navigator.clipboard.writeText(address!);
+  }
+
+  return (
+    <button className="text-muted-foreground" onClick={handleCopy}>
+      {copied ? (
+        <Check className="size-4" strokeWidth={4} />
+      ) : (
+        <Copy className="size-4" strokeWidth={4} />
+      )}
+    </button>
+  );
+}
+
+function BackChevron() {
+  const context = React.useContext(ConnectWalletContext);
+
+  if (!context.pendingConnector) {
+    return null;
+  }
+
+  function handleClick() {
+    context.setIsConnectorError(false);
+    context.setPendingConnector(null);
+  }
+
+  return (
+    <button
+      className="absolute left-[26px] top-[42px] z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground md:top-[26px]"
+      onClick={handleClick}
+    >
+      <ChevronLeft className="h-4 w-4" />
+      <span className="sr-only">Cancel connection</span>
+    </button>
+  );
+}
+
+function RetryConnectorButton() {
+  const context = React.useContext(ConnectWalletContext);
+  const { connect } = useConnect({
+    mutation: {
+      onError: () => context.setIsConnectorError(true),
+    },
+  });
+
+  function handleClick() {
+    if (context.pendingConnector) {
+      context.setIsConnectorError(false);
+      connect({ connector: context.pendingConnector });
+    }
+  }
+
+  return (
+    <Button
+      size="icon"
+      variant="secondary"
+      className="group absolute -bottom-2 -right-2 rounded-full bg-muted p-1.5 shadow"
+      onClick={handleClick}
+    >
+      <RotateCcw className="size-4 transition-transform group-hover:-rotate-45" />
+    </Button>
+  );
+}
+
+function useConnectors() {
+  const context = React.useContext(ConnectWalletContext);
   const { connect, connectors } = useConnect({
     mutation: {
-      onError: () => setIsConnectorError(true),
+      onError: () => context.setIsConnectorError(true),
     },
   });
 
@@ -288,128 +414,5 @@ function WalletOptions() {
     return formattedConnectors;
   }, [connectors]);
 
-  return (
-    <div className="flex flex-col gap-3.5">
-      {sortedConnectors.map((connector) => (
-        <WalletOption
-          key={connector.uid}
-          connector={connector}
-          onClick={() => {
-            setIsConnectorError(false);
-            setPendingConnector(connector);
-            connect({ connector });
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function WalletOption(props: { connector: Connector; onClick: () => void }) {
-  const [ready, setReady] = React.useState(false);
-
-  React.useEffect(() => {
-    (async () => {
-      const provider = await props.connector.getProvider();
-      setReady(!!provider);
-    })();
-  }, [props.connector]);
-
-  return (
-    <Button
-      disabled={!ready}
-      onClick={props.onClick}
-      size="lg"
-      variant="secondary"
-      className="justify-between rounded-xl px-4 py-7 text-base font-semibold"
-    >
-      <p>{props.connector.name}</p>
-      {props.connector.icon && (
-        <img
-          src={props.connector.icon}
-          alt={props.connector.name}
-          className="size-8 overflow-hidden rounded-[6px]"
-        />
-      )}
-    </Button>
-  );
-}
-
-function CopyAddressButton() {
-  const { address } = useAccount();
-  const [copied, setCopied] = React.useState(false);
-
-  React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (copied) setCopied(false);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, [copied, setCopied]);
-
-  async function handleCopy() {
-    setCopied(true);
-    await navigator.clipboard.writeText(address!);
-  }
-
-  return (
-    <button className="text-muted-foreground" onClick={handleCopy}>
-      {copied ? (
-        <Check className="size-4" strokeWidth={4} />
-      ) : (
-        <Copy className="size-4" strokeWidth={4} />
-      )}
-    </button>
-  );
-}
-
-function BackChevron() {
-  const { pendingConnector, setIsConnectorError, setPendingConnector } =
-    React.useContext(ConnectWalletContext);
-
-  if (!pendingConnector) {
-    return null;
-  }
-
-  function handleClick() {
-    setIsConnectorError(false);
-    setPendingConnector(null);
-  }
-
-  return (
-    <button
-      className="absolute left-[26px] top-[42px] z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground md:top-[26px]"
-      onClick={handleClick}
-    >
-      <ChevronLeft className="h-4 w-4" />
-      <span className="sr-only">Cancel connection</span>
-    </button>
-  );
-}
-
-function RetryConnectorButton() {
-  const { pendingConnector, setIsConnectorError } =
-    React.useContext(ConnectWalletContext);
-  const { connect } = useConnect({
-    mutation: {
-      onError: () => setIsConnectorError(true),
-    },
-  });
-
-  function handleClick() {
-    if (pendingConnector) {
-      setIsConnectorError(false);
-      connect({ connector: pendingConnector });
-    }
-  }
-
-  return (
-    <Button
-      size="icon"
-      variant="secondary"
-      className="group absolute -bottom-2 -right-2 rounded-full bg-muted p-1.5 shadow"
-      onClick={handleClick}
-    >
-      <RotateCcw className="size-4 transition-transform group-hover:-rotate-45" />
-    </Button>
-  );
+  return { connectors: sortedConnectors, connect };
 }
