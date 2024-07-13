@@ -5,16 +5,16 @@ const nextConfig = {
     config.externals.push("pino-pretty", "encoding");
     return config;
   },
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "avatar.vercel.sh",
-        port: "",
-        pathname: "/**",
-      },
-    ],
-  },
+  // images: {
+  //   remotePatterns: [
+  //     {
+  //       protocol: "https",
+  //       hostname: "avatar.vercel.sh",
+  //       port: "",
+  //       pathname: "/**",
+  //     },
+  //   ],
+  // },
 };
 
 export default nextConfig;
