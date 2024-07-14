@@ -866,10 +866,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider as WagmiProviderRoot, State } from "wagmi";
 import { getConfig } from "@/lib/wagmi-config";
 
-// Make sure to replace the projectId with your own WalletConnect Project ID,
-// if you wish to use WalletConnect (recommended)!
-const projectId = "78fa76a3de0f683106888b43443018b8";
-
 // 2. Define your Wagmi config
 const config = getConfig();
 
@@ -904,6 +900,51 @@ If you want to enable background scaling, wrap your app with the `vaul-drawer-wr
 See my implementation at [layout.tsx](src/app/layout.tsx). Make sure to update the background color to match your project's theme.
 
 ### Local connector icons
+
+Imported Wagmi connectors do not have their own icons. I provided URLs to hosted files so you don't need to worry about them. However, if you want to self host your icons you can copy the files in the [icons](public/icons) directory into your `public` folder.
+
+Then change the following code in your `connect-wallet` component:
+
+```tsx
+const formattedConnectors = connectors.reduce((acc: Array<Connector>, curr) => {
+  switch (curr.id) {
+    case "metaMaskSDK":
+      metaMaskConnector = {
+        ...curr,
+        icon: "/icons/metamask-icon.png",
+      };
+      return acc;
+    case "injected":
+      injectedConnector = {
+        ...curr,
+        name: "MetaMask",
+        icon: "/icons/metamask-icon.png",
+      };
+      return acc;
+    case "safe":
+      acc.push({
+        ...curr,
+        icon: "/icons/gnosis-safe-icon.png",
+      });
+      return acc;
+    case "coinbaseWalletSDK":
+      acc.push({
+        ...curr,
+        icon: "coinbase-icon.png",
+      });
+      return acc;
+    case "walletConnect":
+      acc.push({
+        ...curr,
+        icon: "wallet-connect-icon.png",
+      });
+      return acc;
+    default:
+      acc.unshift(curr);
+      return acc;
+  }
+}, []);
+```
 
 ## Credits
 
