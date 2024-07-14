@@ -6,7 +6,7 @@ SimpleKit is the simplest way to integrate a connect wallet experience into your
 
 ## Installation
 
-1. Install
+1. Install Wagmi
 
 Install Wagmi and its peer dependencies:
 
@@ -23,13 +23,13 @@ pnpm add wagmi viem@2.x @tanstack/react-query
 
 SimpleKit utilises [WalletConnect's](https://walletconnect.com/) SDK to help with connecting wallets. WalletConnect 2.0 requires a `projectId` which you can create quickly and easily for free over at [WalletConnect Cloud](https://cloud.walletconnect.com/).
 
-3. Copy the `dialog`, `drawer`, `scroll-area`, and `button` components from shadcn/ui.
+3. Install the `dialog`, `drawer`, `scroll-area`, and `button` components from shadcn/ui.
 
 ```bash
 pnpm dlx shadcn-ui@latest add dialog drawer scroll-area button
 ```
 
-Alternatively, if you are not using shadcn/ui cli, you can manually copy the components from [shadcn/ui](https://ui.shadcn.com/docs) or directly copy from [dialog.tsx](src/components/ui/dialog.tsx), [drawer.tsx](src/components/ui/drawer.tsx),[scroll-area.tsx](src/components/ui/scroll-area.tsx), and [button.tsx](src/components/ui/button.tsx).
+Alternatively, if you are not using shadcn/ui cli, you can manually copy the components from [shadcn/ui](https://ui.shadcn.com/docs) or directly copy from [dialog.tsx](src/components/ui/dialog.tsx), [drawer.tsx](src/components/ui/drawer.tsx), [scroll-area.tsx](src/components/ui/scroll-area.tsx), and [button.tsx](src/components/ui/button.tsx).
 
 If you copied the drawer component manually, make sure to install vaul.
 
@@ -38,6 +38,8 @@ pnpm add vaul
 ```
 
 4. Set up the `WagmiProvider`: [wagmi-provider.tsx](src/components/wagmi-provider.tsx)
+
+Make sure to replace the `projectId` with your own WalletConnect Project ID, if you wish to use WalletConnect (highly recommended)!
 
 ```tsx
 "use client";
@@ -50,8 +52,8 @@ import { mainnet } from "wagmi/chains";
 import { injected, walletConnect, coinbaseWallet } from "wagmi/connectors";
 
 // Make sure to replace the projectId with your own WalletConnect Project ID,
-// if you wish to use WalletConnect (recommended)!
-const projectId = "78fa76a3de0f683106888b43443018b8";
+// if you wish to use WalletConnect (highly recommended)!
+const projectId = "123...abc";
 
 // 2. Define your Wagmi config
 const config = createConfig({
@@ -88,7 +90,7 @@ const App = () => {
   return (
     <WagmiProvider>
       ...
-      {/* children */}
+      {children}
       ...
     </WagmiProvider>
   );
@@ -781,6 +783,8 @@ import { ConnectWallet } from "@/components/connect-wallet";
 ```tsx
 <ConnectWallet />
 ```
+
+## Misc. Config
 
 ## Credits
 
