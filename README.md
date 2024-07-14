@@ -45,14 +45,14 @@ Make sure to replace the `projectId` with your own WalletConnect Project ID, if 
 "use client";
 
 // 1. Import modules
-import React from "react";
+import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider as WagmiProviderBase, http, createConfig } from "wagmi";
+import { WagmiProvider as WagmiProviderRoot, http, createConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
-import { injected, walletConnect, coinbaseWallet } from "wagmi/connectors";
+import { injected, coinbaseWallet, walletConnect } from "wagmi/connectors";
 
 // Make sure to replace the projectId with your own WalletConnect Project ID,
-// if you wish to use WalletConnect (highly recommended)!
+// if you wish to use WalletConnect (recommended)!
 const projectId = "123...abc";
 
 // 2. Define your Wagmi config
@@ -70,11 +70,11 @@ const queryClient = new QueryClient();
 // 4. Create your Wagmi provider
 export function WagmiProvider(props: { children: React.ReactNode }) {
   return (
-    <WagmiProviderBase config={config}>
+    <WagmiProviderRoot config={config}>
       <QueryClientProvider client={queryClient}>
         {props.children}
       </QueryClientProvider>
-    </WagmiProviderBase>
+    </WagmiProviderRoot>
   );
 }
 ```
@@ -766,14 +766,6 @@ function useConnectors() {
 
 7. Update the import paths based on your project structure.
 
-8. If you want to enable background scaling, wrap your app with the `vaul-drawer-wrapper`.
-
-```html
-<div vaul-drawer-wrapper="" className="bg-background">{children}</div>
-```
-
-See my implementation at [layout.tsx](src/app/layout.tsx). Make sure to update the background color to match your project's theme.
-
 ## Usage
 
 ```tsx
@@ -784,7 +776,134 @@ import { ConnectWallet } from "@/components/connect-wallet";
 <ConnectWallet />
 ```
 
-## Misc. Config
+## Additional Build Tooling Setup
+
+### Next.js support and using SSR with the app router
+
+SimpleKit uses [WalletConnect's](https://walletconnect.com/) SDK to help with connecting wallets. WalletConnect 2.0 pulls in Node.js dependencies that Next.js does not support by default. You can mitigate this by adding the following to your `next.config.js` file:
+
+```js
+const nextConfig = {
+  webpack: (config) => {
+    config.resolve.fallback = { fs: false, net: false, tls: false };
+    config.externals.push("pino-pretty", "encoding");
+    return config;
+  },
+};
+```
+
+If you are looking to use SimpleKit with the Next.js app router, you can follow the official [Wagmi SSR](https://wagmi.sh/react/guides/ssr) documentation or change the following:
+
+1. Copy the `wagmi-config` file: [wagmi-config.ts](src/lib/wagmi-config.ts)
+
+The config needs to be separate from the WagmiProvider given that is a client component with the `"use client"` directive.
+
+```ts
+import { http, createConfig, cookieStorage, createStorage } from "wagmi";
+import { mainnet } from "wagmi/chains";
+import { injected, coinbaseWallet, walletConnect } from "wagmi/connectors";
+
+// Make sure to replace the projectId with your own WalletConnect Project ID,
+// if you wish to use WalletConnect (recommended)!
+const projectId = "123...abc";
+
+export function getConfig() {
+  return createConfig({
+    chains: [mainnet],
+    connectors: [injected(), coinbaseWallet(), walletConnect({ projectId })],
+    ssr: true,
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    transports: {
+      [mainnet.id]: http(),
+    },
+  });
+}
+
+export const config = getConfig();
+```
+
+This version of the config sets the `ssr` config property to `true` and uses Wagmi's `createStorage` to initialize a `cookieStorage` on the `storage` config property.
+
+2. Hydrate your cookie in Layout
+
+In our [layout.tsx](src/app/layout.tsx) file (a Server Component), we will need to extract the cookie from the `headers` function and pass it to `cookieToInitialState`.
+
+We use the `getConfig()` helper from [wagmi-config.ts](src/lib/wagmi-config) to pass in `cookieToInitialState`.
+
+```tsx
+import { WagmiProvider } from "@/components/wagmi-provider";
+import { headers } from "next/headers";
+import { cookieToInitialState } from "wagmi";
+...
+
+export default function Layout() {
+  ...
+  const initialState = cookieToInitialState(
+    getConfig(),
+    headers().get("cookie"),
+  );
+
+  return (
+    <WagmiProvider initialState={initialState}>
+      ...
+      {children}
+      ...
+    </WagmiProvider>
+  );
+}
+```
+
+3. Replace the contents of `wagmi-config` with the content from the `wagmi-provider-ssr` component: [wagmi-provider-ssr.tsx](src/lib/wagmi-provider-ssr.tsx)
+
+```tsx
+"use client";
+
+// 1. Import modules
+import * as React from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider as WagmiProviderRoot, State } from "wagmi";
+import { getConfig } from "@/lib/wagmi-config";
+
+// Make sure to replace the projectId with your own WalletConnect Project ID,
+// if you wish to use WalletConnect (recommended)!
+const projectId = "78fa76a3de0f683106888b43443018b8";
+
+// 2. Define your Wagmi config
+const config = getConfig();
+
+// 3. Initialize your new QueryClient
+const queryClient = new QueryClient();
+
+// 4. Create your Wagmi provider
+export function WagmiProvider(props: {
+  initialState: State | undefined;
+  children: React.ReactNode;
+}) {
+  return (
+    <WagmiProviderRoot config={config} initialState={props.initialState}>
+      <QueryClientProvider client={queryClient}>
+        {props.children}
+      </QueryClientProvider>
+    </WagmiProviderRoot>
+  );
+}
+```
+
+The two additions here are we use `getConfig()` to initialize our Wagmi config and our `WagmiProvider` and `WagmiProviderRoot` both consume the `initialState` we passed from our Layout.
+
+### Vaul background scaling
+
+If you want to enable background scaling, wrap your app with the `vaul-drawer-wrapper`.
+
+```html
+<div vaul-drawer-wrapper="" className="bg-background">{children}</div>
+```
+
+See my implementation at [layout.tsx](src/app/layout.tsx). Make sure to update the background color to match your project's theme.
+
+### Local connector icons
 
 ## Credits
 
