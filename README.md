@@ -778,7 +778,7 @@ import { ConnectWallet } from "@/components/connect-wallet";
 
 ## Additional Build Tooling Setup
 
-### Next.js support and using SSR with the app router
+- ### Next.js support and using SSR with the app router
 
 SimpleKit uses [WalletConnect's](https://walletconnect.com/) SDK to help with connecting wallets. WalletConnect 2.0 pulls in Node.js dependencies that Next.js does not support by default. You can mitigate this by adding the following to your `next.config.js` file:
 
@@ -836,6 +836,7 @@ We use the `getConfig()` helper from [wagmi-config.ts](src/lib/wagmi-config) to 
 import { WagmiProvider } from "@/components/wagmi-provider";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
+import { getConfig } from "@/lib/wagmi-config";
 ...
 
 export default function Layout() {
@@ -889,7 +890,7 @@ export function WagmiProvider(props: {
 
 The two additions here are we use `getConfig()` to initialize our Wagmi config and our `WagmiProvider` and `WagmiProviderRoot` both consume the `initialState` we passed from our Layout.
 
-### Vaul background scaling
+- ### Vaul background scaling
 
 If you want to enable background scaling, wrap your app with the `vaul-drawer-wrapper`.
 
@@ -899,7 +900,7 @@ If you want to enable background scaling, wrap your app with the `vaul-drawer-wr
 
 See my implementation at [layout.tsx](src/app/layout.tsx). Make sure to update the background color to match your project's theme.
 
-### Local connector icons
+- ### Local connector icons
 
 Imported Wagmi connectors do not have their own icons. I provided URLs to hosted files so you don't need to worry about them. However, if you want to self host your icons you can copy the files in the [icons](public/icons) directory into your `public` folder.
 
