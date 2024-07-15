@@ -5,6 +5,7 @@ import { WagmiProvider } from "@/components/wagmi-provider-ssr";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 import { getConfig } from "@/lib/wagmi-config";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,11 +27,13 @@ export default function RootLayout({
 
   return (
     <WagmiProvider initialState={initialState}>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={inter.className}>
-          <div vaul-drawer-wrapper="" className="bg-background">
-            {children}
-          </div>
+          <ThemeProvider attribute="class">
+            <div vaul-drawer-wrapper="" className="bg-background">
+              {children}
+            </div>
+          </ThemeProvider>
         </body>
       </html>
     </WagmiProvider>
