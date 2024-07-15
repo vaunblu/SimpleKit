@@ -805,7 +805,7 @@ export {
 
 ## Usage
 
-An example connect wallet button component is exported from [simplekit](src/components/simplekit.tsx#:~:text=ConnectWalletButton) and can be used as follows
+An example [connect wallet button](https://github.com/vaunblu/SimpleKit/blob/main/src/components/simplekit.tsx#L87) component is exported from `simplekit` and can be used as follows
 
 ```tsx
 import { ConnectWalletButton } from "@/components/simplekit";
@@ -815,7 +815,7 @@ import { ConnectWalletButton } from "@/components/simplekit";
 <ConnectWalletButton />
 ```
 
-A [useSimpleKit](src/components/simplekit#:~:text=useSimpleKit) hook is also exported from `simplekit` and can be used to trigger the SimpleKit modal from any component. Below is an example of a custom component that opens the SimpleKit modal.
+A [useSimpleKit](https://github.com/vaunblu/SimpleKit/blob/main/src/components/simplekit.tsx#L430) hook is also exported from `simplekit` and can be used to trigger the SimpleKit modal from any component. Below is an example of a custom component that opens the SimpleKit modal.
 
 ```tsx
 "use client";
