@@ -426,7 +426,6 @@ function useConnectors() {
  * This hook can be moved to a separate file
  * if desired (src/hooks/use-simple-kit.tsx).
  */
-
 function useSimpleKit() {
   const { address } = useAccount();
   const context = React.useContext(SimpleKitContext);

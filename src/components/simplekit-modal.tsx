@@ -203,7 +203,6 @@ export {
  * MediaQueryListEvent. This can be moved to a separate file
  * if desired (src/hooks/use-media-query.tsx).
  */
-
 export function useMediaQuery(query: string) {
   const [value, setValue] = React.useState(false);
 
