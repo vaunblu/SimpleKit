@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { WagmiProvider } from "@/components/wagmi-provider-ssr";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 import { getConfig } from "@/lib/wagmi-config";
 import { ThemeProvider } from "next-themes";
-
-const inter = Inter({ subsets: ["latin"] });
+import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
   title: "SimpleKit",
@@ -28,7 +26,7 @@ export default function RootLayout({
   return (
     <WagmiProvider initialState={initialState}>
       <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
+        <body className={GeistSans.className}>
           <ThemeProvider attribute="class">
             <div vaul-drawer-wrapper="" className="bg-background">
               {children}

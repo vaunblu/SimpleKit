@@ -3,15 +3,14 @@
 import * as React from "react";
 
 import {
-  ConnectWalletModal,
-  ConnectWalletModalBody,
-  ConnectWalletModalContent,
-  ConnectWalletModalDescription,
-  ConnectWalletModalFooter,
-  ConnectWalletModalHeader,
-  ConnectWalletModalTitle,
-  ConnectWalletModalTrigger,
-} from "@/components/ui/connect-wallet-modal";
+  SimpleKitModal,
+  SimpleKitModalBody,
+  SimpleKitModalContent,
+  SimpleKitModalDescription,
+  SimpleKitModalFooter,
+  SimpleKitModalHeader,
+  SimpleKitModalTitle,
+} from "@/components/ui/simplekit-modal";
 import { Button } from "@/components/ui/button";
 import {
   type Connector,
@@ -27,7 +26,7 @@ import { Check, ChevronLeft, Copy, RotateCcw } from "lucide-react";
 
 const MODAL_CLOSE_DURATION = 320;
 
-const ConnectWalletContext = React.createContext<{
+const SimpleKitContext = React.createContext<{
   pendingConnector: Connector | null;
   setPendingConnector: React.Dispatch<React.SetStateAction<Connector | null>>;
   isConnectorError: boolean;
@@ -43,16 +42,12 @@ const ConnectWalletContext = React.createContext<{
   setOpen: () => false,
 });
 
-export function ConnectWallet() {
+export function SimpleKitProvider(props: { children: React.ReactNode }) {
   const { status, address } = useAccount();
   const [pendingConnector, setPendingConnector] =
     React.useState<Connector | null>(null);
   const [isConnectorError, setIsConnectorError] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const { data: ensName } = useEnsName({ address });
-  const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
-
-  const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
   const isConnected = address && !pendingConnector;
 
   React.useEffect(() => {
@@ -69,7 +64,7 @@ export function ConnectWallet() {
   }, [status, setOpen, pendingConnector, setPendingConnector]);
 
   return (
-    <ConnectWalletContext.Provider
+    <SimpleKitContext.Provider
       value={{
         pendingConnector,
         setPendingConnector,
@@ -79,25 +74,35 @@ export function ConnectWallet() {
         setOpen,
       }}
     >
-      <ConnectWalletModal open={open} onOpenChange={setOpen}>
-        <ConnectWalletModalTrigger asChild>
-          {isConnected ? (
-            <Button className="rounded-xl">
-              {ensAvatar && <img src={ensAvatar} alt="ENS Avatar" />}
-              {address && (
-                <span>{ensName ? `${ensName}` : formattedAddress}</span>
-              )}
-            </Button>
-          ) : (
-            <Button className="rounded-xl">Connect Wallet</Button>
-          )}
-        </ConnectWalletModalTrigger>
-
-        <ConnectWalletModalContent>
+      {props.children}
+      <SimpleKitModal open={open} onOpenChange={setOpen}>
+        <SimpleKitModalContent>
           {isConnected ? <Account /> : <Connectors />}
-        </ConnectWalletModalContent>
-      </ConnectWalletModal>
-    </ConnectWalletContext.Provider>
+        </SimpleKitModalContent>
+      </SimpleKitModal>
+    </SimpleKitContext.Provider>
+  );
+}
+
+export function ConnectWalletButton() {
+  const simplekit = useSimpleKit();
+  const { address } = useAccount();
+  const { data: ensName } = useEnsName({ address });
+  const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
+
+  return (
+    <Button onClick={simplekit.toggleModal} className="rounded-xl">
+      {simplekit.isConnected ? (
+        <>
+          {ensAvatar && <img src={ensAvatar} alt="ENS Avatar" />}
+          {address && (
+            <span>{ensName ? `${ensName}` : simplekit.formattedAddress}</span>
+          )}
+        </>
+      ) : (
+        "Connect Wallet"
+      )}
+    </Button>
   );
 }
 
@@ -106,7 +111,7 @@ function Account() {
   const { disconnect } = useDisconnect();
   const { data: ensName } = useEnsName({ address });
   const { data: userBalance } = useBalance({ address });
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
   const formattedUserBalace = userBalance?.value
@@ -122,13 +127,13 @@ function Account() {
 
   return (
     <>
-      <ConnectWalletModalHeader>
-        <ConnectWalletModalTitle>Connected</ConnectWalletModalTitle>
-        <ConnectWalletModalDescription className="sr-only">
+      <SimpleKitModalHeader>
+        <SimpleKitModalTitle>Connected</SimpleKitModalTitle>
+        <SimpleKitModalDescription className="sr-only">
           Account modal for your connected Web3 wallet.
-        </ConnectWalletModalDescription>
-      </ConnectWalletModalHeader>
-      <ConnectWalletModalBody className="h-[280px]">
+        </SimpleKitModalDescription>
+      </SimpleKitModalHeader>
+      <SimpleKitModalBody className="h-[280px]">
         <div className="flex w-full flex-col items-center justify-center gap-8 md:pt-5">
           <div className="size-24 flex items-center justify-center">
             <img
@@ -154,37 +159,37 @@ function Account() {
             Disconnect
           </Button>
         </div>
-      </ConnectWalletModalBody>
+      </SimpleKitModalBody>
     </>
   );
 }
 
 function Connectors() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   return (
     <>
-      <ConnectWalletModalHeader>
+      <SimpleKitModalHeader>
         <BackChevron />
-        <ConnectWalletModalTitle>
+        <SimpleKitModalTitle>
           {context.pendingConnector?.name ?? "Connect Wallet"}
-        </ConnectWalletModalTitle>
-        <ConnectWalletModalDescription className="sr-only">
+        </SimpleKitModalTitle>
+        <SimpleKitModalDescription className="sr-only">
           Connect your Web3 wallet or create a new one.
-        </ConnectWalletModalDescription>
-      </ConnectWalletModalHeader>
-      <ConnectWalletModalBody>
+        </SimpleKitModalDescription>
+      </SimpleKitModalHeader>
+      <SimpleKitModalBody>
         {context.pendingConnector ? <WalletConnecting /> : <WalletOptions />}
-      </ConnectWalletModalBody>
-      <ConnectWalletModalFooter>
+      </SimpleKitModalBody>
+      <SimpleKitModalFooter>
         <div className="h-0" />
-      </ConnectWalletModalFooter>
+      </SimpleKitModalFooter>
     </>
   );
 }
 
 function WalletConnecting() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-9 md:pt-5">
@@ -215,7 +220,7 @@ function WalletConnecting() {
 }
 
 function WalletOptions() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
   const { connectors, connect } = useConnectors();
 
   return (
@@ -293,7 +298,7 @@ function CopyAddressButton() {
 }
 
 function BackChevron() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   if (!context.pendingConnector) {
     return null;
@@ -316,7 +321,7 @@ function BackChevron() {
 }
 
 function RetryConnectorButton() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
   const { connect } = useConnect({
     mutation: {
       onError: () => context.setIsConnectorError(true),
@@ -343,7 +348,7 @@ function RetryConnectorButton() {
 }
 
 function useConnectors() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
   const { connect, connectors } = useConnect({
     mutation: {
       onError: () => context.setIsConnectorError(true),
@@ -415,4 +420,34 @@ function useConnectors() {
   }, [connectors]);
 
   return { connectors: sortedConnectors, connect };
+}
+
+export function useSimpleKit() {
+  const { address } = useAccount();
+  const context = React.useContext(SimpleKitContext);
+
+  const isModalOpen = context.open;
+  const isConnected = address && !context.pendingConnector;
+  const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
+
+  function open() {
+    context.setOpen(true);
+  }
+
+  function close() {
+    context.setOpen(false);
+  }
+
+  function toggleModal() {
+    context.setOpen((prevState) => !prevState);
+  }
+
+  return {
+    isModalOpen,
+    isConnected,
+    formattedAddress,
+    open,
+    close,
+    toggleModal,
+  };
 }

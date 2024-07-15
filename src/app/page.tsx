@@ -1,4 +1,4 @@
-import { ConnectWallet } from "@/components/connect-wallet";
+import { ConnectWalletButton } from "@/components/simplekit";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-3.5">
           <ThemeToggle />
-          <ConnectWallet />
+          <ConnectWalletButton />
           <Link href="https://github.com/vaunblu/SimpleKit" target="_blank">
             <Button variant="ghost" className="rounded-xl">
               GitHub &rarr;

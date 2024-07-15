@@ -29,68 +29,65 @@ interface BaseProps {
   children: React.ReactNode;
 }
 
-interface RootConnectWalletModalProps extends BaseProps {
+interface RootSimpleKitModalProps extends BaseProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-interface ConnectWalletModalProps extends BaseProps {
+interface SimpleKitModalProps extends BaseProps {
   className?: string;
   asChild?: true;
 }
 
 const desktop = "(min-width: 768px)";
 
-const ConnectWalletModal = ({
-  children,
-  ...props
-}: RootConnectWalletModalProps) => {
+const SimpleKitModal = ({ children, ...props }: RootSimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModal = isDesktop ? Dialog : Drawer;
+  const SimpleKitModal = isDesktop ? Dialog : Drawer;
 
-  return <ConnectWalletModal {...props}>{children}</ConnectWalletModal>;
+  return <SimpleKitModal {...props}>{children}</SimpleKitModal>;
 };
 
-const ConnectWalletModalTrigger = ({
+const SimpleKitModalTrigger = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalTrigger = isDesktop ? DialogTrigger : DrawerTrigger;
+  const SimpleKitModalTrigger = isDesktop ? DialogTrigger : DrawerTrigger;
 
   return (
-    <ConnectWalletModalTrigger className={className} {...props}>
+    <SimpleKitModalTrigger className={className} {...props}>
       {children}
-    </ConnectWalletModalTrigger>
+    </SimpleKitModalTrigger>
   );
 };
 
-const ConnectWalletModalClose = ({
+const SimpleKitModalClose = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalClose = isDesktop ? DialogClose : DrawerClose;
+  const SimpleKitModalClose = isDesktop ? DialogClose : DrawerClose;
 
   return (
-    <ConnectWalletModalClose className={className} {...props}>
+    <SimpleKitModalClose className={className} {...props}>
       {children}
-    </ConnectWalletModalClose>
+    </SimpleKitModalClose>
   );
 };
 
-const ConnectWalletModalContent = ({
+const SimpleKitModalContent = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalContent = isDesktop ? DialogContent : DrawerContent;
+  const SimpleKitModalContent = isDesktop ? DialogContent : DrawerContent;
 
   return (
-    <ConnectWalletModalContent
+    <SimpleKitModalContent
       className={cn(
         "rounded-t-3xl sm:rounded-3xl md:max-w-[360px] [&>button]:right-[26px] [&>button]:top-[26px]",
         className,
@@ -99,68 +96,65 @@ const ConnectWalletModalContent = ({
       {...props}
     >
       {children}
-    </ConnectWalletModalContent>
+    </SimpleKitModalContent>
   );
 };
 
-const ConnectWalletModalDescription = ({
+const SimpleKitModalDescription = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalDescription = isDesktop
+  const SimpleKitModalDescription = isDesktop
     ? DialogDescription
     : DrawerDescription;
 
   return (
-    <ConnectWalletModalDescription className={className} {...props}>
+    <SimpleKitModalDescription className={className} {...props}>
       {children}
-    </ConnectWalletModalDescription>
+    </SimpleKitModalDescription>
   );
 };
 
-const ConnectWalletModalHeader = ({
+const SimpleKitModalHeader = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalHeader = isDesktop ? DialogHeader : DrawerHeader;
+  const SimpleKitModalHeader = isDesktop ? DialogHeader : DrawerHeader;
 
   return (
-    <ConnectWalletModalHeader
+    <SimpleKitModalHeader
       className={cn("space-y-0 pb-6 md:pb-3", className)}
       {...props}
     >
       {children}
-    </ConnectWalletModalHeader>
+    </SimpleKitModalHeader>
   );
 };
 
-const ConnectWalletModalTitle = ({
+const SimpleKitModalTitle = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalTitle = isDesktop ? DialogTitle : DrawerTitle;
+  const SimpleKitModalTitle = isDesktop ? DialogTitle : DrawerTitle;
 
   return (
-    <ConnectWalletModalTitle
-      className={cn("text-center", className)}
-      {...props}
-    >
+    <SimpleKitModalTitle className={cn("text-center", className)} {...props}>
       {children}
-    </ConnectWalletModalTitle>
+    </SimpleKitModalTitle>
   );
 };
 
-const ConnectWalletModalBody = ({
+const SimpleKitModalBody = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   return (
     <ScrollArea
       className={cn(
@@ -174,34 +168,34 @@ const ConnectWalletModalBody = ({
   );
 };
 
-const ConnectWalletModalFooter = ({
+const SimpleKitModalFooter = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalFooter = isDesktop ? DialogFooter : DrawerFooter;
+  const SimpleKitModalFooter = isDesktop ? DialogFooter : DrawerFooter;
 
   return (
-    <ConnectWalletModalFooter
+    <SimpleKitModalFooter
       className={cn("py-3.5 md:py-0", className)}
       {...props}
     >
       {children}
-    </ConnectWalletModalFooter>
+    </SimpleKitModalFooter>
   );
 };
 
 export {
-  ConnectWalletModal,
-  ConnectWalletModalTrigger,
-  ConnectWalletModalClose,
-  ConnectWalletModalContent,
-  ConnectWalletModalDescription,
-  ConnectWalletModalHeader,
-  ConnectWalletModalTitle,
-  ConnectWalletModalBody,
-  ConnectWalletModalFooter,
+  SimpleKitModal,
+  SimpleKitModalTrigger,
+  SimpleKitModalClose,
+  SimpleKitModalContent,
+  SimpleKitModalDescription,
+  SimpleKitModalHeader,
+  SimpleKitModalTitle,
+  SimpleKitModalBody,
+  SimpleKitModalFooter,
 };
 
 export function useMediaQuery(query: string) {
