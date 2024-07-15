@@ -9,7 +9,9 @@ export default function Home() {
     <main className="relative flex min-h-screen flex-col items-center justify-center p-3.5">
       <section className="flex flex-col items-center gap-y-9">
         <div className="max-w-lg space-y-3.5 text-center">
-          <h1 className="text-5xl font-semibold md:text-7xl">SimpleKit</h1>
+          <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
+            SimpleKit
+          </h1>
           <p className="text-balance text-muted-foreground md:text-xl">
             Responsive connect wallet and account component built on top of
             Wagmi and shadcn/ui.
