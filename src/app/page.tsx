@@ -4,6 +4,7 @@ import { ThemeToggle } from "./theme-toggle";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import { OpenModalButton } from "./custom-connect-button";
 
 export default function Home() {
   return (

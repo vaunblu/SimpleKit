@@ -37,7 +37,7 @@ If you copied the drawer component manually, make sure to install vaul.
 pnpm add vaul
 ```
 
-4. Set up the `WagmiProvider`: [wagmi-provider.tsx](src/components/wagmi-provider.tsx)
+4. Set up the `Web3Provider`: [web3-provider.tsx](src/components/web3-provider.tsx)
 
 Make sure to replace the `projectId` with your own WalletConnect Project ID, if you wish to use WalletConnect (highly recommended)!
 
@@ -47,9 +47,10 @@ Make sure to replace the `projectId` with your own WalletConnect Project ID, if 
 // 1. Import modules
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider as WagmiProviderRoot, http, createConfig } from "wagmi";
+import { WagmiProvider, http, createConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { injected, coinbaseWallet, walletConnect } from "wagmi/connectors";
+import { SimpleKitProvider } from "@/components/simplekit";
 
 // Make sure to replace the projectId with your own WalletConnect Project ID,
 // if you wish to use WalletConnect (recommended)!
@@ -68,36 +69,36 @@ const config = createConfig({
 const queryClient = new QueryClient();
 
 // 4. Create your Wagmi provider
-export function WagmiProvider(props: { children: React.ReactNode }) {
+export function Web3Provider(props: { children: React.ReactNode }) {
   return (
-    <WagmiProviderRoot config={config}>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <SimpleKitProvider>{props.children}</SimpleKitProvider>
       </QueryClientProvider>
-    </WagmiProviderRoot>
+    </WagmiProvider>
   );
 }
 ```
 
 > :warning: When using a framework that doesn't support [React Server Components](https://react.dev/learn/start-a-new-react-project#bleeding-edge-react-frameworks), you will need to remove the `"use client"` directive at the beginning of this file.
 
-Now that you have your `WagmiProvider` component, you can wrap your app with it
+Now that you have your `Web3Provider` component, you can wrap your app with it
 
 ```tsx
-import { WagmiProvider } from "@/components/wagmi-provider";
+import { Web3Provider } from "@/components/web3-provider";
 
 const App = () => {
   return (
-    <WagmiProvider>
+    <Web3Provider>
       ...
       {children}
       ...
-    </WagmiProvider>
+    </Web3Provider>
   );
 };
 ```
 
-5. Copy the `connect-wallet-modal` component: [connect-wallet-modal.tsx](src/components/ui/connect-wallet-modal.tsx)
+5. Copy the `simplekit-modal` component: [simplekit-modal.tsx](src/components/simplekit-modal.tsx)
 
 This component is a modified version of the [Credenza](https://github.com/redpangilinan/credenza) component that combines the shadcn/ui `dialog` and `drawer`.
 
@@ -136,68 +137,65 @@ interface BaseProps {
   children: React.ReactNode;
 }
 
-interface RootConnectWalletModalProps extends BaseProps {
+interface RootSimpleKitModalProps extends BaseProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-interface ConnectWalletModalProps extends BaseProps {
+interface SimpleKitModalProps extends BaseProps {
   className?: string;
   asChild?: true;
 }
 
 const desktop = "(min-width: 768px)";
 
-const ConnectWalletModal = ({
-  children,
-  ...props
-}: RootConnectWalletModalProps) => {
+const SimpleKitModal = ({ children, ...props }: RootSimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModal = isDesktop ? Dialog : Drawer;
+  const SimpleKitModal = isDesktop ? Dialog : Drawer;
 
-  return <ConnectWalletModal {...props}>{children}</ConnectWalletModal>;
+  return <SimpleKitModal {...props}>{children}</SimpleKitModal>;
 };
 
-const ConnectWalletModalTrigger = ({
+const SimpleKitModalTrigger = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalTrigger = isDesktop ? DialogTrigger : DrawerTrigger;
+  const SimpleKitModalTrigger = isDesktop ? DialogTrigger : DrawerTrigger;
 
   return (
-    <ConnectWalletModalTrigger className={className} {...props}>
+    <SimpleKitModalTrigger className={className} {...props}>
       {children}
-    </ConnectWalletModalTrigger>
+    </SimpleKitModalTrigger>
   );
 };
 
-const ConnectWalletModalClose = ({
+const SimpleKitModalClose = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalClose = isDesktop ? DialogClose : DrawerClose;
+  const SimpleKitModalClose = isDesktop ? DialogClose : DrawerClose;
 
   return (
-    <ConnectWalletModalClose className={className} {...props}>
+    <SimpleKitModalClose className={className} {...props}>
       {children}
-    </ConnectWalletModalClose>
+    </SimpleKitModalClose>
   );
 };
 
-const ConnectWalletModalContent = ({
+const SimpleKitModalContent = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalContent = isDesktop ? DialogContent : DrawerContent;
+  const SimpleKitModalContent = isDesktop ? DialogContent : DrawerContent;
 
   return (
-    <ConnectWalletModalContent
+    <SimpleKitModalContent
       className={cn(
         "rounded-t-3xl sm:rounded-3xl md:max-w-[360px] [&>button]:right-[26px] [&>button]:top-[26px]",
         className,
@@ -206,68 +204,65 @@ const ConnectWalletModalContent = ({
       {...props}
     >
       {children}
-    </ConnectWalletModalContent>
+    </SimpleKitModalContent>
   );
 };
 
-const ConnectWalletModalDescription = ({
+const SimpleKitModalDescription = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalDescription = isDesktop
+  const SimpleKitModalDescription = isDesktop
     ? DialogDescription
     : DrawerDescription;
 
   return (
-    <ConnectWalletModalDescription className={className} {...props}>
+    <SimpleKitModalDescription className={className} {...props}>
       {children}
-    </ConnectWalletModalDescription>
+    </SimpleKitModalDescription>
   );
 };
 
-const ConnectWalletModalHeader = ({
+const SimpleKitModalHeader = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalHeader = isDesktop ? DialogHeader : DrawerHeader;
+  const SimpleKitModalHeader = isDesktop ? DialogHeader : DrawerHeader;
 
   return (
-    <ConnectWalletModalHeader
+    <SimpleKitModalHeader
       className={cn("space-y-0 pb-6 md:pb-3", className)}
       {...props}
     >
       {children}
-    </ConnectWalletModalHeader>
+    </SimpleKitModalHeader>
   );
 };
 
-const ConnectWalletModalTitle = ({
+const SimpleKitModalTitle = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalTitle = isDesktop ? DialogTitle : DrawerTitle;
+  const SimpleKitModalTitle = isDesktop ? DialogTitle : DrawerTitle;
 
   return (
-    <ConnectWalletModalTitle
-      className={cn("text-center", className)}
-      {...props}
-    >
+    <SimpleKitModalTitle className={cn("text-center", className)} {...props}>
       {children}
-    </ConnectWalletModalTitle>
+    </SimpleKitModalTitle>
   );
 };
 
-const ConnectWalletModalBody = ({
+const SimpleKitModalBody = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   return (
     <ScrollArea
       className={cn(
@@ -281,34 +276,34 @@ const ConnectWalletModalBody = ({
   );
 };
 
-const ConnectWalletModalFooter = ({
+const SimpleKitModalFooter = ({
   className,
   children,
   ...props
-}: ConnectWalletModalProps) => {
+}: SimpleKitModalProps) => {
   const isDesktop = useMediaQuery(desktop);
-  const ConnectWalletModalFooter = isDesktop ? DialogFooter : DrawerFooter;
+  const SimpleKitModalFooter = isDesktop ? DialogFooter : DrawerFooter;
 
   return (
-    <ConnectWalletModalFooter
+    <SimpleKitModalFooter
       className={cn("py-3.5 md:py-0", className)}
       {...props}
     >
       {children}
-    </ConnectWalletModalFooter>
+    </SimpleKitModalFooter>
   );
 };
 
 export {
-  ConnectWalletModal,
-  ConnectWalletModalTrigger,
-  ConnectWalletModalClose,
-  ConnectWalletModalContent,
-  ConnectWalletModalDescription,
-  ConnectWalletModalHeader,
-  ConnectWalletModalTitle,
-  ConnectWalletModalBody,
-  ConnectWalletModalFooter,
+  SimpleKitModal,
+  SimpleKitModalTrigger,
+  SimpleKitModalClose,
+  SimpleKitModalContent,
+  SimpleKitModalDescription,
+  SimpleKitModalHeader,
+  SimpleKitModalTitle,
+  SimpleKitModalBody,
+  SimpleKitModalFooter,
 };
 
 export function useMediaQuery(query: string) {
@@ -334,7 +329,7 @@ export function useMediaQuery(query: string) {
 
 > :warning: When using a framework that doesn't support [React Server Components](https://react.dev/learn/start-a-new-react-project#bleeding-edge-react-frameworks), you will need to remove the `"use client"` directive at the beginning of this file.
 
-6. Copy the `connect-wallet` component: [connect-wallet.tsx](src/components/connect-wallet-modal.tsx)
+6. Copy the `simplekit` component: [simplekit.tsx](src/components/simplekit.tsx)
 
 <details>
 <summary>Click to show code</summary>
@@ -345,15 +340,14 @@ export function useMediaQuery(query: string) {
 import * as React from "react";
 
 import {
-  ConnectWalletModal,
-  ConnectWalletModalBody,
-  ConnectWalletModalContent,
-  ConnectWalletModalDescription,
-  ConnectWalletModalFooter,
-  ConnectWalletModalHeader,
-  ConnectWalletModalTitle,
-  ConnectWalletModalTrigger,
-} from "@/components/ui/connect-wallet-modal";
+  SimpleKitModal,
+  SimpleKitModalBody,
+  SimpleKitModalContent,
+  SimpleKitModalDescription,
+  SimpleKitModalFooter,
+  SimpleKitModalHeader,
+  SimpleKitModalTitle,
+} from "@/components/simplekit-modal";
 import { Button } from "@/components/ui/button";
 import {
   type Connector,
@@ -369,7 +363,7 @@ import { Check, ChevronLeft, Copy, RotateCcw } from "lucide-react";
 
 const MODAL_CLOSE_DURATION = 320;
 
-const ConnectWalletContext = React.createContext<{
+const SimpleKitContext = React.createContext<{
   pendingConnector: Connector | null;
   setPendingConnector: React.Dispatch<React.SetStateAction<Connector | null>>;
   isConnectorError: boolean;
@@ -385,16 +379,12 @@ const ConnectWalletContext = React.createContext<{
   setOpen: () => false,
 });
 
-export function ConnectWallet() {
+function SimpleKitProvider(props: { children: React.ReactNode }) {
   const { status, address } = useAccount();
   const [pendingConnector, setPendingConnector] =
     React.useState<Connector | null>(null);
   const [isConnectorError, setIsConnectorError] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const { data: ensName } = useEnsName({ address });
-  const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
-
-  const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
   const isConnected = address && !pendingConnector;
 
   React.useEffect(() => {
@@ -411,7 +401,7 @@ export function ConnectWallet() {
   }, [status, setOpen, pendingConnector, setPendingConnector]);
 
   return (
-    <ConnectWalletContext.Provider
+    <SimpleKitContext.Provider
       value={{
         pendingConnector,
         setPendingConnector,
@@ -421,25 +411,35 @@ export function ConnectWallet() {
         setOpen,
       }}
     >
-      <ConnectWalletModal open={open} onOpenChange={setOpen}>
-        <ConnectWalletModalTrigger asChild>
-          {isConnected ? (
-            <Button className="rounded-xl">
-              {ensAvatar && <img src={ensAvatar} alt="ENS Avatar" />}
-              {address && (
-                <span>{ensName ? `${ensName}` : formattedAddress}</span>
-              )}
-            </Button>
-          ) : (
-            <Button className="rounded-xl">Connect Wallet</Button>
-          )}
-        </ConnectWalletModalTrigger>
-
-        <ConnectWalletModalContent>
+      {props.children}
+      <SimpleKitModal open={open} onOpenChange={setOpen}>
+        <SimpleKitModalContent>
           {isConnected ? <Account /> : <Connectors />}
-        </ConnectWalletModalContent>
-      </ConnectWalletModal>
-    </ConnectWalletContext.Provider>
+        </SimpleKitModalContent>
+      </SimpleKitModal>
+    </SimpleKitContext.Provider>
+  );
+}
+
+function ConnectWalletButton() {
+  const simplekit = useSimpleKit();
+  const { address } = useAccount();
+  const { data: ensName } = useEnsName({ address });
+  const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
+
+  return (
+    <Button onClick={simplekit.toggleModal} className="rounded-xl">
+      {simplekit.isConnected ? (
+        <>
+          {ensAvatar && <img src={ensAvatar} alt="ENS Avatar" />}
+          {address && (
+            <span>{ensName ? `${ensName}` : simplekit.formattedAddress}</span>
+          )}
+        </>
+      ) : (
+        "Connect Wallet"
+      )}
+    </Button>
   );
 }
 
@@ -448,7 +448,7 @@ function Account() {
   const { disconnect } = useDisconnect();
   const { data: ensName } = useEnsName({ address });
   const { data: userBalance } = useBalance({ address });
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
   const formattedUserBalace = userBalance?.value
@@ -464,13 +464,13 @@ function Account() {
 
   return (
     <>
-      <ConnectWalletModalHeader>
-        <ConnectWalletModalTitle>Connected</ConnectWalletModalTitle>
-        <ConnectWalletModalDescription className="sr-only">
+      <SimpleKitModalHeader>
+        <SimpleKitModalTitle>Connected</SimpleKitModalTitle>
+        <SimpleKitModalDescription className="sr-only">
           Account modal for your connected Web3 wallet.
-        </ConnectWalletModalDescription>
-      </ConnectWalletModalHeader>
-      <ConnectWalletModalBody className="h-[280px]">
+        </SimpleKitModalDescription>
+      </SimpleKitModalHeader>
+      <SimpleKitModalBody className="h-[280px]">
         <div className="flex w-full flex-col items-center justify-center gap-8 md:pt-5">
           <div className="size-24 flex items-center justify-center">
             <img
@@ -496,37 +496,37 @@ function Account() {
             Disconnect
           </Button>
         </div>
-      </ConnectWalletModalBody>
+      </SimpleKitModalBody>
     </>
   );
 }
 
 function Connectors() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   return (
     <>
-      <ConnectWalletModalHeader>
+      <SimpleKitModalHeader>
         <BackChevron />
-        <ConnectWalletModalTitle>
+        <SimpleKitModalTitle>
           {context.pendingConnector?.name ?? "Connect Wallet"}
-        </ConnectWalletModalTitle>
-        <ConnectWalletModalDescription className="sr-only">
+        </SimpleKitModalTitle>
+        <SimpleKitModalDescription className="sr-only">
           Connect your Web3 wallet or create a new one.
-        </ConnectWalletModalDescription>
-      </ConnectWalletModalHeader>
-      <ConnectWalletModalBody>
+        </SimpleKitModalDescription>
+      </SimpleKitModalHeader>
+      <SimpleKitModalBody>
         {context.pendingConnector ? <WalletConnecting /> : <WalletOptions />}
-      </ConnectWalletModalBody>
-      <ConnectWalletModalFooter>
+      </SimpleKitModalBody>
+      <SimpleKitModalFooter>
         <div className="h-0" />
-      </ConnectWalletModalFooter>
+      </SimpleKitModalFooter>
     </>
   );
 }
 
 function WalletConnecting() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-9 md:pt-5">
@@ -557,7 +557,7 @@ function WalletConnecting() {
 }
 
 function WalletOptions() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
   const { connectors, connect } = useConnectors();
 
   return (
@@ -635,7 +635,7 @@ function CopyAddressButton() {
 }
 
 function BackChevron() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
 
   if (!context.pendingConnector) {
     return null;
@@ -658,7 +658,7 @@ function BackChevron() {
 }
 
 function RetryConnectorButton() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
   const { connect } = useConnect({
     mutation: {
       onError: () => context.setIsConnectorError(true),
@@ -685,7 +685,7 @@ function RetryConnectorButton() {
 }
 
 function useConnectors() {
-  const context = React.useContext(ConnectWalletContext);
+  const context = React.useContext(SimpleKitContext);
   const { connect, connectors } = useConnect({
     mutation: {
       onError: () => context.setIsConnectorError(true),
@@ -758,6 +758,43 @@ function useConnectors() {
 
   return { connectors: sortedConnectors, connect };
 }
+
+function useSimpleKit() {
+  const { address } = useAccount();
+  const context = React.useContext(SimpleKitContext);
+
+  const isModalOpen = context.open;
+  const isConnected = address && !context.pendingConnector;
+  const formattedAddress = address?.slice(0, 6) + "•••" + address?.slice(-4);
+
+  function open() {
+    context.setOpen(true);
+  }
+
+  function close() {
+    context.setOpen(false);
+  }
+
+  function toggleModal() {
+    context.setOpen((prevState) => !prevState);
+  }
+
+  return {
+    isModalOpen,
+    isConnected,
+    formattedAddress,
+    open,
+    close,
+    toggleModal,
+  };
+}
+
+export {
+  SimpleKitProvider,
+  ConnectWalletButton,
+  useSimpleKit,
+  SimpleKitContext,
+};
 ```
 
 </details>
@@ -768,12 +805,29 @@ function useConnectors() {
 
 ## Usage
 
+An example connect wallet button component is exported from [simplekit](src/components/simplekit.tsx#:~:text=ConnectWalletButton) and can be used as follows
+
 ```tsx
-import { ConnectWallet } from "@/components/connect-wallet";
+import { ConnectWalletButton } from "@/components/simplekit";
 ```
 
 ```tsx
-<ConnectWallet />
+<ConnectWalletButton />
+```
+
+A [useSimpleKit](src/components/simplekit#:~:text=useSimpleKit) hook is also exported from `simplekit` and can be used to trigger the SimpleKit modal from any component. Below is an example of a custom component that opens the SimpleKit modal.
+
+```tsx
+"use client";
+
+import { useSimpleKit } from "@/components/simplekit";
+import { Button } from "@/components/ui/button";
+
+export function OpenModalButton() {
+  const simplekit = useSimpleKit();
+
+  return <Button onClick={simplekit.open}>Open SimpleKit Modal</Button>;
+}
 ```
 
 ## Additional Build Tooling Setup
@@ -833,7 +887,7 @@ In our [layout.tsx](src/app/layout.tsx) file (a Server Component), we will need 
 We use the `getConfig()` helper from [wagmi-config.ts](src/lib/wagmi-config) to pass in `cookieToInitialState`.
 
 ```tsx
-import { WagmiProvider } from "@/components/wagmi-provider";
+import { Web3Provider } from "@/components/web3-provider";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 import { getConfig } from "@/lib/wagmi-config";
@@ -847,16 +901,16 @@ export default function Layout() {
   );
 
   return (
-    <WagmiProvider initialState={initialState}>
+    <Web3Provider initialState={initialState}>
       ...
       {children}
       ...
-    </WagmiProvider>
+    </Web3Provider>
   );
 }
 ```
 
-3. Replace the contents of `wagmi-config` with the content from the `wagmi-provider-ssr` component: [wagmi-provider-ssr.tsx](src/lib/wagmi-provider-ssr.tsx)
+3. Replace the contents of `web3-provider` with the content from the `web3-provider-ssr` component: [web3-provider-ssr.tsx](src/components/web3-provider-ssr.tsx)
 
 ```tsx
 "use client";
@@ -864,8 +918,9 @@ export default function Layout() {
 // 1. Import modules
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider as WagmiProviderRoot, State } from "wagmi";
+import { WagmiProvider, State } from "wagmi";
 import { getConfig } from "@/lib/wagmi-config";
+import { SimpleKitProvider } from "@/components/simplekit";
 
 // 2. Define your Wagmi config
 const config = getConfig();
@@ -874,21 +929,21 @@ const config = getConfig();
 const queryClient = new QueryClient();
 
 // 4. Create your Wagmi provider
-export function WagmiProvider(props: {
+export function Web3Provider(props: {
   initialState: State | undefined;
   children: React.ReactNode;
 }) {
   return (
-    <WagmiProviderRoot config={config} initialState={props.initialState}>
+    <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <SimpleKitProvider>{props.children}</SimpleKitProvider>
       </QueryClientProvider>
-    </WagmiProviderRoot>
+    </WagmiProvider>
   );
 }
 ```
 
-The two additions here are we use `getConfig()` to initialize our Wagmi config and our `WagmiProvider` and `WagmiProviderRoot` both consume the `initialState` we passed from our Layout.
+The two changes here are we use `getConfig()` to initialize our Wagmi config and our `WagmiProvider` consumes the `initialState` we passed from our Layout.
 
 ---
 
@@ -908,7 +963,7 @@ See my implementation at [layout.tsx](src/app/layout.tsx). Make sure to update t
 
 Imported Wagmi connectors do not have their own icons. I provided URLs to hosted files so you don't need to worry about them. However, if you want to self host your icons you can copy the files in the [icons](public/icons) directory into your `public` folder.
 
-Then change the following code in your `connect-wallet` component:
+Then change the following code in your `simplekit` component:
 
 ```tsx
 const formattedConnectors = connectors.reduce((acc: Array<Connector>, curr) => {

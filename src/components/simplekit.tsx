@@ -10,7 +10,7 @@ import {
   SimpleKitModalFooter,
   SimpleKitModalHeader,
   SimpleKitModalTitle,
-} from "@/components/ui/simplekit-modal";
+} from "@/components/simplekit-modal";
 import { Button } from "@/components/ui/button";
 import {
   type Connector,
@@ -42,7 +42,7 @@ const SimpleKitContext = React.createContext<{
   setOpen: () => false,
 });
 
-export function SimpleKitProvider(props: { children: React.ReactNode }) {
+function SimpleKitProvider(props: { children: React.ReactNode }) {
   const { status, address } = useAccount();
   const [pendingConnector, setPendingConnector] =
     React.useState<Connector | null>(null);
@@ -84,7 +84,7 @@ export function SimpleKitProvider(props: { children: React.ReactNode }) {
   );
 }
 
-export function ConnectWalletButton() {
+function ConnectWalletButton() {
   const simplekit = useSimpleKit();
   const { address } = useAccount();
   const { data: ensName } = useEnsName({ address });
@@ -422,7 +422,7 @@ function useConnectors() {
   return { connectors: sortedConnectors, connect };
 }
 
-export function useSimpleKit() {
+function useSimpleKit() {
   const { address } = useAccount();
   const context = React.useContext(SimpleKitContext);
 
@@ -451,3 +451,10 @@ export function useSimpleKit() {
     toggleModal,
   };
 }
+
+export {
+  SimpleKitProvider,
+  ConnectWalletButton,
+  useSimpleKit,
+  SimpleKitContext,
+};

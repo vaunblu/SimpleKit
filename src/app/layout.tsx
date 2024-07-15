@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { WagmiProvider } from "@/components/wagmi-provider-ssr";
+import { Web3Provider } from "@/components/web3-provider-ssr";
 import { headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 import { getConfig } from "@/lib/wagmi-config";
@@ -24,7 +24,7 @@ export default function RootLayout({
   );
 
   return (
-    <WagmiProvider initialState={initialState}>
+    <Web3Provider initialState={initialState}>
       <html lang="en" suppressHydrationWarning>
         <body className={GeistSans.className}>
           <ThemeProvider attribute="class">
@@ -34,6 +34,6 @@ export default function RootLayout({
           </ThemeProvider>
         </body>
       </html>
-    </WagmiProvider>
+    </Web3Provider>
   );
 }
