@@ -1,6 +1,6 @@
 # SimpleKit
 
-A responsive connect wallet and account component built on top of Wagmi and shadcn/ui.
+Responsive connect wallet and account component built on top of Wagmi and shadcn/ui.
 
 SimpleKit is the simplest way to integrate a connect wallet experience into your React.js web application. It is built on top of primitives where it's your components, your code. No more editing style/theme props.
 
