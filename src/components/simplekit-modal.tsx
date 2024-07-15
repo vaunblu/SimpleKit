@@ -201,7 +201,7 @@ export {
 /*
  * Hook used to calculate the width of the screen using the
  * MediaQueryListEvent. This can be moved to a separate file
- * if desired (/hooks/use-media-query.tsx).
+ * if desired (src/hooks/use-media-query.tsx).
  */
 
 export function useMediaQuery(query: string) {
