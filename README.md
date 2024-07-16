@@ -8,7 +8,7 @@ SimpleKit is the simplest way to integrate a connect wallet experience into your
 
 ## Installation
 
-1. Install Wagmi
+### 1. Install Wagmi
 
 Install Wagmi and its peer dependencies:
 
@@ -21,11 +21,11 @@ pnpm add wagmi viem@2.x @tanstack/react-query
 - [TanStack](https://tanstack.com/query/v5) Query is an async state manager that handles requests, caching, and more.
 - [TypeScript](https://wagmi.sh/react/typescript) is optional, but highly recommended.
 
-2. API Keys
+### 2. API Keys
 
 SimpleKit utilises [WalletConnect's](https://walletconnect.com/) SDK to help with connecting wallets. WalletConnect 2.0 requires a `projectId` which you can create quickly and easily for free over at [WalletConnect Cloud](https://cloud.walletconnect.com/).
 
-3. Set up the `Web3Provider`: [web3-provider.tsx](src/components/web3-provider.tsx)
+### 3. Set up the `Web3Provider`: [web3-provider.tsx](src/components/web3-provider.tsx)
 
 Make sure to replace the `projectId` with your own WalletConnect Project ID, if you wish to use WalletConnect (highly recommended)!
 
@@ -90,7 +90,7 @@ const App = () => {
 };
 ```
 
-4. Install the `dialog`, `drawer`, `scroll-area`, and `button` components from shadcn/ui.
+### 4. Install the `dialog`, `drawer`, `scroll-area`, and `button` components from shadcn/ui.
 
 ```bash
 pnpm dlx shadcn-ui@latest add dialog drawer scroll-area button
@@ -110,7 +110,7 @@ If you copied the drawer component manually, make sure to install vaul.
 pnpm add vaul
 ```
 
-5. Copy the `simplekit-modal` component: [simplekit-modal.tsx](src/components/simplekit-modal.tsx)
+### 5. Copy the `simplekit-modal` component: [simplekit-modal.tsx](src/components/simplekit-modal.tsx)
 
 This component is a modified version of the [Credenza](https://github.com/redpangilinan/credenza) component that combines the shadcn/ui `dialog` and `drawer`.
 
@@ -346,7 +346,7 @@ export function useMediaQuery(query: string) {
 
 > :warning: When using a framework that doesn't support [React Server Components](https://react.dev/learn/start-a-new-react-project#bleeding-edge-react-frameworks), you will need to remove the `"use client"` directive at the beginning of this file.
 
-6. Copy the `simplekit` component: [simplekit.tsx](src/components/simplekit.tsx)
+### 6. Copy the `simplekit` component: [simplekit.tsx](src/components/simplekit.tsx)
 
 <details>
 <summary>Click to show code</summary>
@@ -825,7 +825,7 @@ export {
 
 > :warning: When using a framework that doesn't support [React Server Components](https://react.dev/learn/start-a-new-react-project#bleeding-edge-react-frameworks), you will need to remove the `"use client"` directive at the beginning of this file.
 
-7. Update the import paths based on your project structure.
+### 7. Update the import paths based on your project structure.
 
 ## Usage
 
