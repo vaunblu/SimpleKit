@@ -361,6 +361,7 @@ function useConnectors() {
 
     const formattedConnectors = connectors.reduce(
       (acc: Array<Connector>, curr) => {
+        console.log(curr.id);
         switch (curr.id) {
           case "metaMaskSDK":
             metaMaskConnector = {
@@ -368,10 +369,9 @@ function useConnectors() {
               icon: "https://utfs.io/f/be0bd88f-ce87-4cbc-b2e5-c578fa866173-sq4a0b.png",
             };
             return acc;
-          case "injected":
+          case "metaMask":
             injectedConnector = {
               ...curr,
-              name: "MetaMask",
               icon: "https://utfs.io/f/be0bd88f-ce87-4cbc-b2e5-c578fa866173-sq4a0b.png",
             };
             return acc;

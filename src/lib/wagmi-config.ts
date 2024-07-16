@@ -9,7 +9,11 @@ const projectId = "78fa76a3de0f683106888b43443018b8";
 export function getConfig() {
   return createConfig({
     chains: [mainnet],
-    connectors: [injected(), coinbaseWallet(), walletConnect({ projectId })],
+    connectors: [
+      injected({ target: "metaMask" }),
+      coinbaseWallet(),
+      walletConnect({ projectId }),
+    ],
     ssr: true,
     storage: createStorage({
       storage: cookieStorage,
