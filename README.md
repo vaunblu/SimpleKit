@@ -96,11 +96,17 @@ const App = () => {
 pnpm dlx shadcn-ui@latest add dialog drawer scroll-area button
 ```
 
+> :warning: You will have to run the command below to initialize shadcn/ui if it is not already configured. Please see the official [shadcn/ui install](https://ui.shadcn.com/docs/installation) documentation if you are not using Next.js.
+
+```bash
+pnpm dlx shadcn-ui@latest init
+```
+
 Alternatively, if you are not using shadcn/ui cli, you can manually copy the components from [shadcn/ui](https://ui.shadcn.com/docs) or directly copy from [dialog.tsx](src/components/ui/dialog.tsx), [drawer.tsx](src/components/ui/drawer.tsx), [scroll-area.tsx](src/components/ui/scroll-area.tsx), and [button.tsx](src/components/ui/button.tsx).
 
 If you copied the drawer component manually, make sure to install vaul.
 
-```
+```bash
 pnpm add vaul
 ```
 
