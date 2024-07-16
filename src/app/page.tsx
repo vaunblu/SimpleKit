@@ -7,8 +7,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center p-3.5">
-      <section className="flex flex-col items-center gap-y-9">
+    <div className="relative flex min-h-screen flex-col items-center justify-center p-3.5">
+      <main className="flex flex-col items-center gap-y-9">
         <div className="max-w-lg space-y-3.5 text-center">
           <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
             SimpleKit
@@ -27,7 +27,7 @@ export default function Home() {
             </Button>
           </Link>
         </div>
-      </section>
+      </main>
 
       <footer className="absolute bottom-3.5 mx-auto flex items-center gap-[0.5ch] text-center text-muted-foreground">
         <span>Built by</span>
@@ -42,12 +42,11 @@ export default function Home() {
         <Link
           href="https://x.com/vaunblu"
           target="_blank"
-          className="group flex items-center gap-[0.5ch] underline-offset-4 hover:underline"
+          className="flex items-center gap-[0.5ch] underline-offset-4 hover:underline"
         >
-          Vaun Blu{" "}
-          <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
+          Vaun Blu
         </Link>
       </footer>
-    </main>
+    </div>
   );
 }
