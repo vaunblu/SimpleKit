@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "SimpleKit",
   description:
     "Responsive connect wallet and account component built on top of Wagmi and shadcn/ui.",
+  metadataBase: new URL("https://simplekit.vaunb.lu/"),
 };
 
 export default function RootLayout({
