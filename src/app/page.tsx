@@ -31,19 +31,19 @@ export default function Home() {
 
       <footer className="absolute bottom-3.5 mx-auto flex items-center gap-[0.5ch] text-center text-muted-foreground">
         <span>Built by</span>
-        <Image
-          src="https://utfs.io/f/bef33522-69e9-4afe-a242-6f27f8f96fb7-qs7q98.png"
-          alt="vaunblu logo"
-          width={32}
-          height={32}
-          unoptimized
-          className="size-5"
-        />
         <Link
           href="https://x.com/vaunblu"
           target="_blank"
-          className="flex items-center gap-[0.5ch] underline-offset-4 hover:underline"
+          className="group flex items-center gap-[0.5ch] underline-offset-4 hover:underline"
         >
+          <Image
+            src="https://utfs.io/f/bef33522-69e9-4afe-a242-6f27f8f96fb7-qs7q98.png"
+            alt="vaunblu logo"
+            width={32}
+            height={32}
+            unoptimized
+            className="size-5 group-hover:size-6 transition-all"
+          />
           Vaun Blu
         </Link>
       </footer>
