@@ -25,21 +25,7 @@ pnpm add wagmi viem@2.x @tanstack/react-query
 
 SimpleKit utilises [WalletConnect's](https://walletconnect.com/) SDK to help with connecting wallets. WalletConnect 2.0 requires a `projectId` which you can create quickly and easily for free over at [WalletConnect Cloud](https://cloud.walletconnect.com/).
 
-3. Install the `dialog`, `drawer`, `scroll-area`, and `button` components from shadcn/ui.
-
-```bash
-pnpm dlx shadcn-ui@latest add dialog drawer scroll-area button
-```
-
-Alternatively, if you are not using shadcn/ui cli, you can manually copy the components from [shadcn/ui](https://ui.shadcn.com/docs) or directly copy from [dialog.tsx](src/components/ui/dialog.tsx), [drawer.tsx](src/components/ui/drawer.tsx), [scroll-area.tsx](src/components/ui/scroll-area.tsx), and [button.tsx](src/components/ui/button.tsx).
-
-If you copied the drawer component manually, make sure to install vaul.
-
-```
-pnpm add vaul
-```
-
-4. Set up the `Web3Provider`: [web3-provider.tsx](src/components/web3-provider.tsx)
+3. Set up the `Web3Provider`: [web3-provider.tsx](src/components/web3-provider.tsx)
 
 Make sure to replace the `projectId` with your own WalletConnect Project ID, if you wish to use WalletConnect (highly recommended)!
 
@@ -102,6 +88,20 @@ const App = () => {
     </Web3Provider>
   );
 };
+```
+
+4. Install the `dialog`, `drawer`, `scroll-area`, and `button` components from shadcn/ui.
+
+```bash
+pnpm dlx shadcn-ui@latest add dialog drawer scroll-area button
+```
+
+Alternatively, if you are not using shadcn/ui cli, you can manually copy the components from [shadcn/ui](https://ui.shadcn.com/docs) or directly copy from [dialog.tsx](src/components/ui/dialog.tsx), [drawer.tsx](src/components/ui/drawer.tsx), [scroll-area.tsx](src/components/ui/scroll-area.tsx), and [button.tsx](src/components/ui/button.tsx).
+
+If you copied the drawer component manually, make sure to install vaul.
+
+```
+pnpm add vaul
 ```
 
 5. Copy the `simplekit-modal` component: [simplekit-modal.tsx](src/components/simplekit-modal.tsx)
