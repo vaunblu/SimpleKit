@@ -404,7 +404,10 @@ function useConnectors() {
     if (
       metaMaskConnector &&
       !formattedConnectors.find(
-        ({ id }) => id === "io.metamask" || id === "injected",
+        ({ id }) =>
+          id === "io.metamask" ||
+          id === "io.metamask.mobile" ||
+          id === "injected",
       )
     ) {
       return [metaMaskConnector, ...formattedConnectors];
@@ -412,7 +415,7 @@ function useConnectors() {
 
     if (injectedConnector) {
       const nonMetaMaskConnectors = formattedConnectors.filter(
-        ({ id }) => id !== "io.metamask",
+        ({ id }) => id !== "io.metamask" && id !== "io.metamask.mobile",
       );
       return [injectedConnector, ...nonMetaMaskConnectors];
     }

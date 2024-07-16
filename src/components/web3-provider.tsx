@@ -15,7 +15,11 @@ const projectId = "123...abc";
 // 2. Define your Wagmi config
 const config = createConfig({
   chains: [mainnet],
-  connectors: [injected(), coinbaseWallet(), walletConnect({ projectId })],
+  connectors: [
+    injected({ target: "metaMask" }),
+    coinbaseWallet(),
+    walletConnect({ projectId }),
+  ],
   transports: {
     [mainnet.id]: http(),
   },

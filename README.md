@@ -59,7 +59,11 @@ const projectId = "123...abc";
 // 2. Define your Wagmi config
 const config = createConfig({
   chains: [mainnet],
-  connectors: [injected(), coinbaseWallet(), walletConnect({ projectId })],
+  connectors: [
+    injected({ target: "metaMask" }),
+    coinbaseWallet(),
+    walletConnect({ projectId }),
+  ],
   transports: {
     [mainnet.id]: http(),
   },
@@ -306,6 +310,11 @@ export {
   SimpleKitModalFooter,
 };
 
+/*
+ * Hook used to calculate the width of the screen using the
+ * MediaQueryListEvent. This can be moved to a separate file
+ * if desired (src/hooks/use-media-query.tsx).
+ */
 export function useMediaQuery(query: string) {
   const [value, setValue] = React.useState(false);
 
@@ -698,6 +707,7 @@ function useConnectors() {
 
     const formattedConnectors = connectors.reduce(
       (acc: Array<Connector>, curr) => {
+        console.log(curr.id);
         switch (curr.id) {
           case "metaMaskSDK":
             metaMaskConnector = {
@@ -705,10 +715,9 @@ function useConnectors() {
               icon: "https://utfs.io/f/be0bd88f-ce87-4cbc-b2e5-c578fa866173-sq4a0b.png",
             };
             return acc;
-          case "injected":
+          case "metaMask":
             injectedConnector = {
               ...curr,
-              name: "MetaMask",
               icon: "https://utfs.io/f/be0bd88f-ce87-4cbc-b2e5-c578fa866173-sq4a0b.png",
             };
             return acc;
@@ -741,7 +750,10 @@ function useConnectors() {
     if (
       metaMaskConnector &&
       !formattedConnectors.find(
-        ({ id }) => id === "io.metamask" || id === "injected",
+        ({ id }) =>
+          id === "io.metamask" ||
+          id === "io.metamask.mobile" ||
+          id === "injected",
       )
     ) {
       return [metaMaskConnector, ...formattedConnectors];
@@ -749,7 +761,7 @@ function useConnectors() {
 
     if (injectedConnector) {
       const nonMetaMaskConnectors = formattedConnectors.filter(
-        ({ id }) => id !== "io.metamask",
+        ({ id }) => id !== "io.metamask" && id !== "io.metamask.mobile",
       );
       return [injectedConnector, ...nonMetaMaskConnectors];
     }
@@ -759,6 +771,10 @@ function useConnectors() {
   return { connectors: sortedConnectors, connect };
 }
 
+/*
+ * This hook can be moved to a separate file
+ * if desired (src/hooks/use-simple-kit.tsx).
+ */
 function useSimpleKit() {
   const { address } = useAccount();
   const context = React.useContext(SimpleKitContext);
@@ -864,7 +880,11 @@ const projectId = "123...abc";
 export function getConfig() {
   return createConfig({
     chains: [mainnet],
-    connectors: [injected(), coinbaseWallet(), walletConnect({ projectId })],
+    connectors: [
+      injected({ target: "metaMask" }),
+      coinbaseWallet(),
+      walletConnect({ projectId }),
+    ],
     ssr: true,
     storage: createStorage({
       storage: cookieStorage,
@@ -977,7 +997,6 @@ const formattedConnectors = connectors.reduce((acc: Array<Connector>, curr) => {
     case "injected":
       injectedConnector = {
         ...curr,
-        name: "MetaMask",
         icon: "/icons/metamask-icon.png",
       };
       return acc;
