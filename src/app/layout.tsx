@@ -8,10 +8,52 @@ import { ThemeProvider } from "next-themes";
 import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://simplekit.vaunb.lu"),
   title: "SimpleKit",
   description:
     "Responsive connect wallet and account component built on top of Wagmi and shadcn/ui.",
-  metadataBase: new URL("https://simplekit.vaunb.lu/"),
+  keywords: [
+    "Next.js",
+    "React",
+    "Tailwind CSS",
+    "shadcn/ui",
+    "Wagmi",
+    "ConnectKit",
+    "Vercel",
+    "Web3",
+  ],
+  authors: [
+    {
+      name: "vaunblu",
+      url: "https://vaunb.lu",
+    },
+  ],
+  creator: "vaunblu",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://simplekit.vaunb.lu",
+    title: "SimpleKit",
+    description:
+      "Responsive connect wallet and account component built on top of Wagmi and shadcn/ui.",
+    siteName: "SimpleKit",
+    images: [
+      {
+        url: "https://simplekit.vaunb.lu/og.png",
+        width: 1200,
+        height: 630,
+        alt: "SimpleKit",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SimpleKit",
+    description:
+      "Responsive connect wallet and account component built on top of Wagmi and shadcn/ui.",
+    images: ["https://simplekit.vaunb.lu/og.png"],
+    creator: "@vaunblu",
+  },
 };
 
 export default function RootLayout({
