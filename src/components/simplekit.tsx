@@ -35,7 +35,7 @@ const SimpleKitContext = React.createContext<{
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }>({
   pendingConnector: null,
-  setPendingConnector: () => { },
+  setPendingConnector: () => null,
   isConnectorError: false,
   setIsConnectorError: () => false,
   open: false,
@@ -244,10 +244,13 @@ function WalletOption(props: { connector: Connector; onClick: () => void }) {
   const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {
-    (async () => {
+    async function checkReady() {
       const provider = await props.connector.getProvider();
       setReady(!!provider);
-    })();
+    }
+    checkReady()
+      .then(() => null)
+      .catch(() => null);
   }, [props.connector]);
 
   return (
